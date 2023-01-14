@@ -1,0 +1,54 @@
+package com.app.services;
+
+import com.app.entities.Client;
+import com.app.entities.Role;
+import com.app.repository.ClientRepository;
+import com.app.securityConfig.JwtService;
+import com.app.services.auth.AuthenticationRequest;
+import com.app.services.auth.AuthenticationResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationService {
+  private final ClientRepository clientRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+
+  public AuthenticationResponse register(Client client, boolean isClient) {
+    if(clientRepository.findByEmail(client.getEmail()).isPresent()){
+      throw new IllegalStateException("Email already taken");
+    }
+    client.setMotDePasse(passwordEncoder.encode(client.getMotDePasse()));
+    if(isClient){
+      client.setRole(Role.CLIENT);
+    }else
+      client.setRole(Role.ADMIN);
+
+    clientRepository.save(client);
+    var jwtToken = jwtService.generateToken(client);
+    return AuthenticationResponse.builder()
+        .token(jwtToken)
+        .build();
+  }
+
+  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            request.getEmail(),
+            request.getPassword()
+        )
+    );
+    var client = clientRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new IllegalStateException("User not found!!"));
+    var jwtToken = jwtService.generateToken(client);
+    return AuthenticationResponse.builder()
+        .token(jwtToken)
+        .build();
+  }
+}
