@@ -22,13 +22,13 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf()
-        .disable()
+        .cors().and().csrf().disable()
         .authorizeHttpRequests()
-        .requestMatchers("/api/v1/auth/**","/swagger-ui/**","/v3/api-docs/**","/javainuse-openapi/**")
+        .requestMatchers("/api/v1/auth/**","/swagger-ui/**","/v3/api-docs/**","/api/v1/public/**")
         .permitAll()
-            .requestMatchers("/api/v1/client/**","/api/v1/test/**").hasAnyAuthority("CLIENT")
-            .requestMatchers("/api/v1/admin/**","/api/v1/test/**").hasAnyAuthority("ADMIN")
+            .requestMatchers("/api/v1/client/**").hasAnyAuthority("CLIENT")
+            .requestMatchers("/api/v1/admin/**").hasAnyAuthority("ADMIN")
+            .requestMatchers("/api/v1/test").hasAnyAuthority("CLIENT","ADMIN")
 //        .anyRequest()
 //        .authenticated()
         .and()

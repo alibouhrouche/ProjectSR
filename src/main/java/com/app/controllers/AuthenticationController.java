@@ -2,9 +2,10 @@ package com.app.controllers;
 
 import com.app.entities.Client;
 import com.app.services.AuthenticationService;
-import com.app.services.auth.AuthenticationRequest;
-import com.app.services.auth.AuthenticationResponse;
+import com.app.entities.auth.AuthenticationRequest;
+import com.app.entities.auth.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,10 @@ public class AuthenticationController {
   ) {
     return ResponseEntity.ok(service.register(client,isClient));
   }
-  @PostMapping("/authenticate")
+  @PostMapping(value = {"/authenticate"},produces = {"application/json", MediaType.ALL_VALUE}, consumes = MediaType.ALL_VALUE)
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(service.authenticate(request));
   }
-
-
 }

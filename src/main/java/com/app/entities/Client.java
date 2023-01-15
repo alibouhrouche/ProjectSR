@@ -41,7 +41,6 @@ public class Client implements Serializable , UserDetails {
     private String email;
 
     @Column(name = "mot_de_passe", nullable = false, length = 100)
-    @JsonIgnore
     private String motDePasse;
 
     @Column(name = "nom", nullable = false, length = 45)
@@ -69,7 +68,6 @@ public class Client implements Serializable , UserDetails {
     }
 
     @Override
-    @JsonIgnore
     public String getPassword() {
         return motDePasse;
     }
