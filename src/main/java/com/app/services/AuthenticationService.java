@@ -7,8 +7,14 @@ import com.app.securityConfig.JwtService;
 import com.app.services.auth.AuthenticationRequest;
 import com.app.services.auth.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +30,18 @@ public class AuthenticationService {
     if(clientRepository.findByEmail(client.getEmail()).isPresent()){
       throw new IllegalStateException("Email already taken");
     }
-    client.setMotDePasse(passwordEncoder.encode(client.getMotDePasse()));
-    if(isClient){
+    client.setPassword(passwordEncoder.encode(client.getPassword()));
+    if(!isClient){
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      Client c = (Client)auth.getPrincipal();
+      if((c != null) && c.isAdmin()){
+        client.setRole(Role.ADMIN);
+      }else{
+        throw new IllegalStateException("Trying to register an admin user!");
+      }
+    }else{
       client.setRole(Role.CLIENT);
-    }else
-      client.setRole(Role.ADMIN);
+    }
 
     clientRepository.save(client);
     var jwtToken = jwtService.generateToken(client);
@@ -51,4 +64,12 @@ public class AuthenticationService {
         .token(jwtToken)
         .build();
   }
+
+  public List<Client> getUsers(){
+    return clientRepository.findAll();
+  }
+  public Optional<Client> getUser(int id){
+    return clientRepository.findById(id);
+  }
+
 }

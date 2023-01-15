@@ -6,6 +6,7 @@ import com.app.services.auth.AuthenticationRequest;
 import com.app.services.auth.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
@@ -29,6 +30,9 @@ public class AuthenticationController {
   ) {
     return ResponseEntity.ok(service.authenticate(request));
   }
-
+  @GetMapping("/currentUser")
+  public ResponseEntity<Client> current(Authentication authentication) {
+      return ResponseEntity.ok((Client)authentication.getPrincipal());
+  }
 
 }

@@ -7,11 +7,13 @@ import com.app.entities.Sport;
 import com.app.repository.CarnetRepository;
 import com.app.repository.ClientRepository;
 import com.app.repository.SportRepository;
+
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,15 +22,21 @@ public class CarnetService {
     private final CarnetRepository carnetRepository;
     private final ClientRepository clientRepository;
     private final SportRepository sportRepository;
-    public Carnet createCarnet(Map<String,String> requestMap) {
-        Optional<Client> client = clientRepository.findById(Integer.valueOf(requestMap.get("client_id")));
-        Optional<Sport> sport = sportRepository.findById(Integer.valueOf(requestMap.get("sport_id")));
+    @Data
+    public static class CarnetCreate implements Serializable{
+        private int client;
+        private int sport;
+        private int nombreEntrees;
+    }
+    public Carnet createCarnet(CarnetCreate requestMap) {
+        Optional<Client> client = clientRepository.findById(requestMap.getClient());
+        Optional<Sport> sport = sportRepository.findById(requestMap.getSport());
         Carnet carnet = new Carnet();
         if(client.isPresent() && sport.isPresent()){
             carnet.setId(new CarnetId(client.get().getId(),sport.get().getId()));
             carnet.setIdClient(client.get());
             carnet.setIdSport(sport.get());
-            carnet.setNombreEntrees(Integer.valueOf(requestMap.get("nombreEntrees")));
+            carnet.setNombreEntrees(requestMap.getNombreEntrees());
         }else
             throw new IllegalStateException("Please Enter a valid Sport and client!!");
         return carnetRepository.save(carnet);
@@ -40,15 +48,26 @@ public class CarnetService {
         return carnetRepository.findAll();
     }
 
-    public Carnet updateCarnet(Map<String,String> requestMap) {
-        Optional<Client> client = clientRepository.findById(Integer.valueOf(requestMap.get("client_id")));
-        Optional<Sport> sport = sportRepository.findById(Integer.valueOf(requestMap.get("sport_id")));
+    @Data
+    public static class CarnetUpdate implements Serializable {
+        private String id;
+        private int nombreEntrees;
+        public int getClient() {
+            return Integer.valueOf(id.split("-")[0]);
+        }
+        public int getSport() {
+            return Integer.valueOf(id.split("-")[1]);
+        }
+    }
+    public Carnet updateCarnet(CarnetUpdate requestMap) {
+        Optional<Client> client = clientRepository.findById(requestMap.getClient());
+        Optional<Sport> sport = sportRepository.findById(requestMap.getSport());
         Carnet carnet = new Carnet();
         if(client.isPresent() && sport.isPresent()){
             carnet.setId(new CarnetId(client.get().getId(),sport.get().getId()));
             carnet.setIdClient(client.get());
             carnet.setIdSport(sport.get());
-            carnet.setNombreEntrees(Integer.valueOf(requestMap.get("nombreEntrees")));
+            carnet.setNombreEntrees(Integer.valueOf(requestMap.getNombreEntrees()));
         }else
             throw new IllegalStateException("Please Enter a valid Sport and client!!");
         return carnetRepository.saveAndFlush(carnet);

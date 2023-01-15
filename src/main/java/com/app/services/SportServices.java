@@ -22,6 +22,10 @@ public class SportServices {
         return sportRepository.findAll();
     }
 
+    public Optional<Sport> getSport(int id) {
+        return sportRepository.findById(id);
+    }
+
     public Sport save(Sport sport) {
         return sportRepository.save(sport);
     }

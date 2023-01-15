@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -17,18 +16,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
   private final AuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
-  private final PasswordEncoder passwordEncoder;
-
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
+        .cors()
+        .and()
         .csrf()
         .disable()
         .authorizeHttpRequests()
-        .requestMatchers("/api/v1/auth/**","/swagger-ui/**","/v3/api-docs/**","/javainuse-openapi/**")
-        .permitAll()
-            .requestMatchers("/api/v1/client/**","/api/v1/test/**").hasAnyAuthority("CLIENT")
-            .requestMatchers("/api/v1/admin/**","/api/v1/test/**").hasAnyAuthority("ADMIN")
+        .requestMatchers("/api/v1/client/**","/api/v1/test/**").hasAnyAuthority("CLIENT","ADMIN")
+        .requestMatchers("/api/v1/admin/**","/api/v1/test/**").hasAnyAuthority("ADMIN")
+        .anyRequest().permitAll()
+        // .requestMatchers("/**").permitAll()
 //        .anyRequest()
 //        .authenticated()
         .and()

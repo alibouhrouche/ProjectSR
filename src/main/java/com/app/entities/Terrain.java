@@ -1,5 +1,10 @@
 package com.app.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,4 +30,26 @@ public class Terrain {
 
     @Column(name = "surface", nullable = false, length = 45)
     private String surface;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "terrains")
+    private Set<Sport> sports = new HashSet<>();
+
+    @JsonProperty("sportsNames")
+    public Set<String> getSportsList() {
+        Set<String> ret = new HashSet<>();
+        for (Sport sport : sports) {
+            ret.add(sport.getNom());
+        }
+        return ret;
+    }
+
+    @JsonProperty("sports")
+    public Set<Integer> getSportsIDsList() {
+        Set<Integer> ret = new HashSet<>();
+        for (Sport sport : sports) {
+            ret.add(sport.getId());
+        }
+        return ret;
+    }
 }
