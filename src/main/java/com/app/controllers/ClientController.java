@@ -4,14 +4,11 @@ import com.app.entities.Client;
 import com.app.securityConfig.JwtService;
 import com.app.services.ClientServices;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -44,8 +41,8 @@ public class ClientController {
             }
             client.setEmail(requestClient.getEmail());
         }
-        if(!requestClient.getMotDePasse().equals("") && !requestClient.getMotDePasse().isEmpty()){
-            client.setMotDePasse(passwordEncoder.encode(requestClient.getMotDePasse()));
+        if(!requestClient.getPassword().equals("") && !requestClient.getPassword().isEmpty()){
+            client.setPassword(passwordEncoder.encode(requestClient.getPassword()));
         }
         return ResponseEntity.ok(clientServices.saveClient(client));
     }
