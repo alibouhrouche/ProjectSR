@@ -4,8 +4,8 @@ import com.app.entities.Client;
 import com.app.entities.Role;
 import com.app.repository.ClientRepository;
 import com.app.securityConfig.JwtService;
-import com.app.services.auth.AuthenticationRequest;
-import com.app.services.auth.AuthenticationResponse;
+import com.app.entities.auth.AuthenticationRequest;
+import com.app.entities.auth.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
