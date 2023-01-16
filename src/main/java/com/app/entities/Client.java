@@ -1,6 +1,7 @@
 package com.app.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 @JacksonXmlRootElement
-public class Client implements Serializable , UserDetails {
+public class Client implements UserDetails {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class Client implements Serializable , UserDetails {
     private String email;
 
     @Column(name = "mot_de_passe", nullable = false, length = 100)
-    private String motDePasse;
+    private String password;
 
     @Column(name = "nom", nullable = false, length = 45)
     private String nom;
@@ -52,12 +52,12 @@ public class Client implements Serializable , UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public Client(Integer codePostal, String rue, String ville, String email, String motDePasse, String nom, String prenom) {
+    public Client(Integer codePostal, String rue, String ville, String email, String password, String nom, String prenom) {
         this.codePostal = codePostal;
         this.rue = rue;
         this.ville = ville;
         this.email = email;
-        this.motDePasse = motDePasse;
+        this.password = password;
         this.nom = nom;
         this.prenom = prenom;
     }
@@ -69,7 +69,12 @@ public class Client implements Serializable , UserDetails {
 
     @Override
     public String getPassword() {
-        return motDePasse;
+        return password;
+    }
+
+    @JsonProperty("password")
+    public void setPassword(String mdp) {
+        password = mdp;
     }
 
     @Override
@@ -95,5 +100,10 @@ public class Client implements Serializable , UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @JsonProperty("isAdmin")
+    public boolean isAdmin() {
+        return role.equals(Role.ADMIN);
     }
 }

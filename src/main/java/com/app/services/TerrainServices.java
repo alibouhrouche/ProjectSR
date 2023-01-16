@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,6 +18,14 @@ public class TerrainServices {
 
     public List<Terrain> getAllTerrains() {
         return terrainRepository.findAll();
+    }
+
+    public Optional<Terrain> getTerrain(int id) {
+        return terrainRepository.findById(id);
+    }
+
+    public Optional<Terrain> getTerrainByCode(String code) {
+        return terrainRepository.findByCode(code);
     }
 
     public Terrain save(Terrain terrain) {

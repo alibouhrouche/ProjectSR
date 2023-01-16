@@ -7,6 +7,7 @@ import com.app.entities.auth.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
@@ -29,5 +30,9 @@ public class AuthenticationController {
       @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(service.authenticate(request));
+  }
+  @GetMapping("/currentUser")
+  public ResponseEntity<Client> current(Authentication authentication) {
+      return ResponseEntity.ok((Client)authentication.getPrincipal());
   }
 }

@@ -3,13 +3,13 @@ package com.app.controllers;
 import com.app.entities.Carnet;
 import com.app.entities.CarnetId;
 import com.app.services.CarnetService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -19,25 +19,27 @@ public class CarnetController {
 
     private final CarnetService carnetService;
     @PostMapping
-    public Carnet createCarnet(@RequestBody Map<String,String> carnet) {
+    public Carnet createCarnet(@RequestBody CarnetService.CarnetCreate carnet) {
         return carnetService.createCarnet(carnet);
     }
     @PutMapping
-    public Carnet updateCarnet(@RequestBody Map<String,String> carnet) {
+    public Carnet updateCarnet(@RequestBody CarnetService.CarnetUpdate carnet) {
         return carnetService.updateCarnet(carnet);
     }
-    @GetMapping(value="/{idClient}/{idSport}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value={"/{idClient}-{idSport}","/{idClient}/{idSport}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Optional<Carnet> getCarnetById(@PathVariable Integer idClient, @PathVariable Integer idSport) {
         CarnetId id = new CarnetId(idClient, idSport);
         return carnetService.getCarnetById(id);
     }
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<List<Carnet>> getAllCarnets() {
         return ResponseEntity.ok(carnetService.getAllCarnets());
     }
     @DeleteMapping("/{id}")
-    public void deleteCarnetById(@PathVariable CarnetId id) {
-        carnetService.deleteCarnetById(id);
+    public void deleteCarnetById(@PathVariable String id) {
+        String[] s = id.split("-");
+        CarnetId c = new CarnetId(Integer.parseInt(s[0]),Integer.parseInt(s[1]));
+        carnetService.deleteCarnetById(c);
     }
     @DeleteMapping
     public void deleteCarnet(@RequestBody Carnet carnet) {
@@ -47,7 +49,7 @@ public class CarnetController {
     public void deleteAllCarnets() {
         carnetService.deleteAllCarnets();
     }
-    @PostMapping(value="/{idClient}/{idSport}/buy")
+    @PostMapping(value={"/{idClient}-{idSport}/buy","/{idClient}/{idSport}/buy"})
     public ResponseEntity<Carnet> buyTicket(@PathVariable Integer idClient, @PathVariable Integer idSport, @RequestBody Integer nombres) {
         Carnet carnet = carnetService.buyTicket(idClient, idSport, nombres);
         if(carnet != null) {
