@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ClientController {
     private final PasswordEncoder passwordEncoder;
     private final ClientServices clientServices;
-    @PutMapping(produces = {"application/json", "application/xml"}, consumes = MediaType.ALL_VALUE)
+    @PutMapping(produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
     public ResponseEntity<Client> updateClient(Authentication authentication,@RequestBody Client client) {
         Client c = (Client)authentication.getPrincipal();
         if(client.getPassword() != null && !client.getPassword().isEmpty()) {

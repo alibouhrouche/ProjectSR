@@ -35,7 +35,7 @@ public class AdminController {
     private final AuthenticationService aService;
     private final SortService sService;
     private final PasswordEncoder passwordEncoder;
-    @GetMapping("/users")
+    @GetMapping(value="/users",produces = {"application/json", "application/xml"})
     public ResponseEntity<List<Client>> getUsers(
         @RequestParam(required = false) String email,
         @RequestParam(defaultValue = "1") int _page,
@@ -61,7 +61,7 @@ public class AdminController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/users/{id}")
+    @GetMapping(value="/users/{id}",produces = {"application/json", "application/xml"})
     public ResponseEntity<Client> getUser(@PathVariable int id) {
         Optional<Client> u = aService.getUser(id);
         if(u.isEmpty())
@@ -81,7 +81,7 @@ public class AdminController {
         }
         return ResponseEntity.ok(clientServices.saveClient(client));
     }
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping(value="/users/{id}",produces = {"application/json", "application/xml"})
     public ResponseEntity<Client> deleteClient(@PathVariable Integer id){
         return ResponseEntity.ok(clientServices.delete(id));
     }

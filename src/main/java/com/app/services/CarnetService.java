@@ -1,21 +1,21 @@
 package com.app.services;
 
 import com.app.entities.Carnet;
+import com.app.entities.CarnetCreate;
 import com.app.entities.CarnetId;
+import com.app.entities.CarnetUpdate;
 import com.app.entities.Client;
 import com.app.entities.Sport;
 import com.app.repository.CarnetRepository;
 import com.app.repository.ClientRepository;
 import com.app.repository.SportRepository;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +25,6 @@ public class CarnetService {
     private final CarnetRepository carnetRepository;
     private final ClientRepository clientRepository;
     private final SportRepository sportRepository;
-    @Data
-    public static class CarnetCreate implements Serializable{
-        private int client;
-        private int sport;
-        private int nombreEntrees;
-    }
     public Carnet createCarnet(CarnetCreate requestMap) {
         Optional<Client> client = clientRepository.findById(requestMap.getClient());
         Optional<Sport> sport = sportRepository.findById(requestMap.getSport());
@@ -54,17 +48,6 @@ public class CarnetService {
         return carnetRepository.findAll(p);
     }
 
-    @Data
-    public static class CarnetUpdate implements Serializable {
-        private String id;
-        private int nombreEntrees;
-        public int getClient() {
-            return Integer.valueOf(id.split("-")[0]);
-        }
-        public int getSport() {
-            return Integer.valueOf(id.split("-")[1]);
-        }
-    }
     public Carnet updateCarnet(CarnetUpdate requestMap) {
         Optional<Client> client = clientRepository.findById(requestMap.getClient());
         Optional<Sport> sport = sportRepository.findById(requestMap.getSport());

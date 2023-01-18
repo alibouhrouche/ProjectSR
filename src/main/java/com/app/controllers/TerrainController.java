@@ -2,23 +2,20 @@ package com.app.controllers;
 
 import com.app.entities.Sport;
 import com.app.entities.Terrain;
+import com.app.entities.TerrainData;
 import com.app.services.SortService;
 import com.app.services.SportServices;
 import com.app.services.TerrainServices;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +28,7 @@ public class TerrainController {
     private final SportServices sportServices;
     private final TerrainServices terrainServices;
 
-    @GetMapping(value = {"admin/terrain","client/terrain"},produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = {"admin/terrain","client/terrain"},produces = { "application/json", "application/xml" })
     public ResponseEntity<List<Terrain>> getAllClients(
         @RequestParam(defaultValue = "1") int _page,
         @RequestParam(defaultValue = "10") int _size,
@@ -52,7 +49,7 @@ public class TerrainController {
         }
     }
 
-    @GetMapping(value = {"admin/terrain/{id}","client/terrain/{id}"},produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = {"admin/terrain/{id}","client/terrain/{id}"},produces = { "application/json", "application/xml" })
     public ResponseEntity<Terrain> getTerrain(@PathVariable int id) {
         Optional<Terrain> s = terrainServices.getTerrain(id);
         if(s.isEmpty())
@@ -60,21 +57,11 @@ public class TerrainController {
         return ResponseEntity.ok(s.get());
     }
 
-    @PostMapping("admin/terrain/save")
+    @PostMapping(value="admin/terrain/save",produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
     public ResponseEntity<Terrain> saveSport(@RequestBody Terrain terrain){
         return ResponseEntity.ok(terrainServices.save(terrain));
     }
-    @Data
-    /**
-     * InnerTerrainController
-     */
-    public static class TerrainData implements Serializable {
-        private int id;
-        private String code;
-        private String surface;
-        private List<Integer> sports = new ArrayList<>();
-    }
-    @PutMapping("admin/terrain/update")
+    @PutMapping(value="admin/terrain/update",produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
     public ResponseEntity<Terrain> updateSport(@RequestBody TerrainData terrain){
         Optional<Terrain> t = terrainServices.getTerrain(terrain.getId());
         if(t.isEmpty())
@@ -94,7 +81,7 @@ public class TerrainController {
         terrain2.setSurface(terrain.getSurface());
         return ResponseEntity.ok(terrainServices.save(terrain2));
     }
-    @DeleteMapping("admin/terrain/{id}")
+    @DeleteMapping(value="admin/terrain/{id}",produces = {"application/json", "application/xml"})
     public ResponseEntity<Terrain> updateSport(@PathVariable Integer id){
         return ResponseEntity.ok(terrainServices.delete(id));
     }

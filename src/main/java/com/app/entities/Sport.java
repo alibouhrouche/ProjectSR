@@ -3,6 +3,9 @@ package com.app.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +26,7 @@ public class Sport {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private Integer id;
 
     @Column(name = "nom", nullable = false, length = 45)
@@ -42,6 +46,7 @@ public class Sport {
     private Set<Terrain> terrains = new HashSet<>();
 
     @JsonProperty("terrains")
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public Set<String> getTerrainsList() {
         Set<String> ret = new HashSet<>();
         for (Terrain terrain : terrains) {

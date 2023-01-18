@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/v1/public")
 public class PublicController {
     private final SportServices sportServices;
-    @GetMapping("sports")
+    @GetMapping(value="sports",produces={"application/json", "application/xml"})
     public ResponseEntity<List<Sport>> getAllSports(){
         return ResponseEntity.ok(sportServices.getAllSports());
     }

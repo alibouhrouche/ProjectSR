@@ -1,24 +1,22 @@
 package com.app.controllers;
 
 import com.app.entities.Sport;
+import com.app.entities.SportData;
 import com.app.entities.Terrain;
+import com.app.entities.TerrainToSport;
 import com.app.services.SortService;
 import com.app.services.SportServices;
 import com.app.services.TerrainServices;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +29,7 @@ public class SportController {
     private final SportServices sportServices;
     private final TerrainServices terrainServices;
 
-    @GetMapping(value = {"admin/sport","client/sport"},produces = { "application/json", MediaType.ALL_VALUE }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = {"admin/sport","client/sport"},produces = {"application/json", "application/xml"})
     public ResponseEntity<List<Sport>> getAllClients(
         @RequestParam(defaultValue = "1") int _page,
         @RequestParam(defaultValue = "10") int _size,
@@ -51,7 +49,7 @@ public class SportController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping(value = {"admin/sport/{id}","client/sport/{id}"},produces = { "application/json", MediaType.ALL_VALUE }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = {"admin/sport/{id}","client/sport/{id}"},produces = {"application/json", "application/xml"})
     public ResponseEntity<Sport> getSport(@PathVariable int id) {
         Optional<Sport> s = sportServices.getSport(id);
         if(s.isEmpty())
@@ -59,18 +57,11 @@ public class SportController {
         return ResponseEntity.ok(s.get());
     }
 
-    @PostMapping("admin/sport/save")
+    @PostMapping(value="admin/sport/save",produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
     public ResponseEntity<Sport> saveSport(@RequestBody Sport sport){
         return ResponseEntity.ok(sportServices.save(sport));
     }
-    @Data
-    public static class SportData implements Serializable {
-        private int id;
-        private String nom;
-        private int nombreJoueurs;
-        private List<String> terrains = new ArrayList<>();
-    }
-    @PutMapping("admin/sport/update")
+    @PutMapping(value="admin/sport/update",produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
     public ResponseEntity<Sport> updateSport(@RequestBody SportData sport){
         Optional<Sport> s = sportServices.getSport(sport.getId());
         if(s.isEmpty())
@@ -89,22 +80,17 @@ public class SportController {
         return ResponseEntity.ok(sportServices.save(sport2));
     }
 
-    @DeleteMapping("admin/sport/{id}")
+    @DeleteMapping(value="admin/sport/{id}",produces = {"application/json", "application/xml"})
     public ResponseEntity<Sport> updateSport(@PathVariable Integer id){
         return ResponseEntity.ok(sportServices.delete(id));
     }
 
-    @Data
-    public static class InnerSport implements Serializable {
-        private int Sport;
-        private String Terrain;
-    }
-    @PostMapping("admin/sport/addTerrainToSport")
-    public ResponseEntity<?> addTerrainToSport(@RequestBody InnerSport form) {
+    @PostMapping(value="admin/sport/addTerrainToSport",produces = {"application/json", "application/xml"},consumes = {"application/json", "application/xml"})
+    public ResponseEntity<?> addTerrainToSport(@RequestBody TerrainToSport form) {
         sportServices.saveToTerrain(String.valueOf(form.getSport()),form.getTerrain());
         return ResponseEntity.ok().build();
     }
-    @DeleteMapping("admin/sport/removeTerrainToSport/{sport_id}")
+    @DeleteMapping(value="admin/sport/removeTerrainToSport/{sport_id}",produces = {"application/json", "application/xml"})
     public ResponseEntity<?> removeTerrain(@PathVariable("sport_id") Integer sportId,
                                            @RequestParam String terrainCode){
         sportServices.removeTerrain(sportId,terrainCode);

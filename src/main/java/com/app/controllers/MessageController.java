@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class MessageController {
     private final SortService sService;
     private final MessageService messageService;
-    @GetMapping(produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(produces = { "application/json", "application/xml" })
     public ResponseEntity<List<Message>> getMessages(
         @RequestParam Optional<Integer> id,
         @RequestParam(defaultValue = "1") int _page,
@@ -58,7 +58,7 @@ public class MessageController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping(path="/my",produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(path="/my",produces = { "application/json", "application/xml" })
     public ResponseEntity<List<Message>> getMyMessages(
         Authentication authentication,
         @RequestParam(defaultValue = "1") int _page,
@@ -87,11 +87,11 @@ public class MessageController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping(path={"/my/{id}","/{id}"},produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
+    @GetMapping(path={"/my/{id}","/{id}"},produces = { "application/json", "application/xml" })
     public ResponseEntity<Optional<Message>> getMessage(@PathVariable int id) {
         return ResponseEntity.ok(messageService.getMessage(id));
     }
-    @PostMapping(path={"","/my"},consumes = {MediaType.TEXT_PLAIN_VALUE})
+    @PostMapping(path={"","/my"},consumes = {MediaType.TEXT_PLAIN_VALUE},produces = {"application/json", "application/xml"})
     public ResponseEntity<Message> postMessage(Authentication authentication,@RequestBody String message) {
         Client client = (Client)authentication.getPrincipal();
         if(client == null){
@@ -100,7 +100,7 @@ public class MessageController {
         Message msg = new Message(message, client);
         return ResponseEntity.ok(messageService.sendMessage(msg));
     }
-    @DeleteMapping(path={"/my/{id}","/{id}"})
+    @DeleteMapping(path={"/my/{id}","/{id}"},produces = {"application/json", "application/xml"})
     public ResponseEntity<Boolean> deleteMessage(Authentication authentication,@PathVariable int id) {
         return ResponseEntity.ok(messageService.deleteMessage((Client)authentication.getPrincipal(), id));
     }

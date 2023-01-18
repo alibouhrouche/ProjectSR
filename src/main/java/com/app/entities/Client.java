@@ -3,6 +3,9 @@ package com.app.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +29,7 @@ public class Client implements UserDetails {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private Integer id;
 
     @Column(name = "code_postal", nullable = false)
@@ -50,6 +54,7 @@ public class Client implements UserDetails {
     private String prenom;
 
     @Enumerated(EnumType.STRING)
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private Role role;
 
     public Client(Integer codePostal, String rue, String ville, String email, String password, String nom, String prenom) {
@@ -63,6 +68,7 @@ public class Client implements UserDetails {
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
@@ -79,31 +85,37 @@ public class Client implements UserDetails {
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public String getUsername() {
         return email;
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public boolean isEnabled() {
         return true;
     }
 
     @JsonProperty("isAdmin")
+    @Schema(accessMode = AccessMode.READ_ONLY)
     public boolean isAdmin() {
         return role.equals(Role.ADMIN);
     }
