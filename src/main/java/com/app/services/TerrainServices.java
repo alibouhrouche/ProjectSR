@@ -3,6 +3,9 @@ package com.app.services;
 import com.app.entities.Terrain;
 import com.app.repository.TerrainRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,10 @@ public class TerrainServices {
 
     public List<Terrain> getAllTerrains() {
         return terrainRepository.findAll();
+    }
+
+    public Page<Terrain> getAllTerrains(Pageable p) {
+        return terrainRepository.findAll(p);
     }
 
     public Optional<Terrain> getTerrain(int id) {

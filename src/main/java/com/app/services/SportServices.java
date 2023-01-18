@@ -5,6 +5,9 @@ import com.app.entities.Terrain;
 import com.app.repository.SportRepository;
 import com.app.repository.TerrainRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,10 @@ public class SportServices {
 
     public List<Sport> getAllSports() {
         return sportRepository.findAll();
+    }
+
+    public Page<Sport> getAllSports(Pageable p) {
+        return sportRepository.findAll(p);
     }
 
     public Optional<Sport> getSport(int id) {

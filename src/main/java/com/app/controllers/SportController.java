@@ -2,11 +2,17 @@ package com.app.controllers;
 
 import com.app.entities.Sport;
 import com.app.entities.Terrain;
+import com.app.services.SortService;
 import com.app.services.SportServices;
 import com.app.services.TerrainServices;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +27,29 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class SportController {
+    private final SortService sService;
     private final SportServices sportServices;
     private final TerrainServices terrainServices;
 
     @GetMapping(value = {"admin/sport","client/sport"},produces = { "application/json", MediaType.ALL_VALUE }, consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<List<Sport>> getAllClients() {
-        return ResponseEntity.ok(sportServices.getAllSports());
+    public ResponseEntity<List<Sport>> getAllClients(
+        @RequestParam(defaultValue = "1") int _page,
+        @RequestParam(defaultValue = "10") int _size,
+        @RequestParam(required = false) String[] _sort,
+        @RequestParam(required = false) String[] _order
+    ) {
+        try {
+            HttpHeaders responseHeaders = new HttpHeaders();
+            Pageable paging = sService.getSorter(_page, _size, _sort, _order);
+            if(paging == null)
+                return ResponseEntity.ok(sportServices.getAllSports());
+            Page<Sport> pageSports = sportServices.getAllSports(paging);
+            List<Sport> sports = pageSports.getContent();
+            responseHeaders.add("x-total-count",String.valueOf(pageSports.getTotalElements()));
+            return ResponseEntity.ok().headers(responseHeaders).body(sports);
+        }catch(Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping(value = {"admin/sport/{id}","client/sport/{id}"},produces = { "application/json", MediaType.ALL_VALUE }, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<Sport> getSport(@PathVariable int id) {

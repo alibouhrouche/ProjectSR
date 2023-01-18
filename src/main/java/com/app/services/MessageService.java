@@ -11,7 +11,10 @@ import com.app.entities.Message;
 import com.app.repository.ClientRepository;
 import com.app.repository.MessageRepository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,6 +31,16 @@ public class MessageService {
                 return messageRepository.findAll(Example.of(msg));
         }
         return messageRepository.findAll();
+    }
+    public Page<Message> getMessages(Optional<Integer> id,Pageable p) {
+        if(id.isPresent()){
+            Optional<Client> c = clientRepository.findById(id.get());
+            if(c.isEmpty()) return Page.empty(p);
+            Message msg = new Message();
+            msg.setIdClient(c.get());
+                return messageRepository.findAll(Example.of(msg),p);
+        }
+        return messageRepository.findAll(p);
     }
     public Optional<Message> getMessage(int id) {
         return messageRepository.findById(id);

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.entities.Client;
 import com.app.entities.Message;
 import com.app.services.MessageService;
+import com.app.services.SortService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,17 +31,61 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/client/messages")
 public class MessageController {
+    private final SortService sService;
     private final MessageService messageService;
     @GetMapping(produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<List<Message>> getMessages(@RequestParam Optional<Integer> id) {
-        return ResponseEntity.ok(messageService.getMessages(id));
+    public ResponseEntity<List<Message>> getMessages(
+        @RequestParam Optional<Integer> id,
+        @RequestParam(defaultValue = "1") int _page,
+        @RequestParam(defaultValue = "10") int _size,
+        @RequestParam(required = false) String[] _sort,
+        @RequestParam(required = false) String[] _order
+    ) {
+        try {
+            HttpHeaders responseHeaders = new HttpHeaders();
+            if(_sort == null){
+                _sort = new String[]{"id"};
+                _order = new String[]{"desc"};
+            }
+            Pageable paging = sService.getSorter(_page, _size, _sort, _order);
+            if(paging == null)
+                return ResponseEntity.ok(messageService.getMessages(id));
+            Page<Message> pageCarnets = messageService.getMessages(id,paging);
+            List<Message> carnets = pageCarnets.getContent();
+            responseHeaders.add("x-total-count",String.valueOf(pageCarnets.getTotalElements()));
+            return ResponseEntity.ok().headers(responseHeaders).body(carnets);
+        }catch(Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping(path="/my",produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
-    public ResponseEntity<List<Message>> getMyMessages(Authentication authentication) {
+    public ResponseEntity<List<Message>> getMyMessages(
+        Authentication authentication,
+        @RequestParam(defaultValue = "1") int _page,
+        @RequestParam(defaultValue = "10") int _size,
+        @RequestParam(required = false) String[] _sort,
+        @RequestParam(required = false) String[] _order
+    ) {
         Client client = (Client)authentication.getPrincipal();
         if(client == null)
             return ResponseEntity.ok(new ArrayList<Message>());
-        return ResponseEntity.ok(messageService.getMessages(Optional.of(client.getId())));
+        try {
+            Optional<Integer> id = Optional.of(client.getId());
+            HttpHeaders responseHeaders = new HttpHeaders();
+            if(_sort == null){
+                _sort = new String[]{"id"};
+                _order = new String[]{"desc"};
+            }
+            Pageable paging = sService.getSorter(_page, _size, _sort, _order);
+            if(paging == null)
+                return ResponseEntity.ok(messageService.getMessages(id));
+            Page<Message> pageCarnets = messageService.getMessages(id,paging);
+            List<Message> carnets = pageCarnets.getContent();
+            responseHeaders.add("x-total-count",String.valueOf(pageCarnets.getTotalElements()));
+            return ResponseEntity.ok().headers(responseHeaders).body(carnets);
+        }catch(Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping(path={"/my/{id}","/{id}"},produces = { "application/json", "application/xml" }, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<Optional<Message>> getMessage(@PathVariable int id) {

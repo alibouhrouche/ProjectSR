@@ -10,6 +10,9 @@ import com.app.repository.SportRepository;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -46,6 +49,9 @@ public class CarnetService {
     }
     public List<Carnet> getAllCarnets() {
         return carnetRepository.findAll();
+    }
+    public Page<Carnet> getAllCarnets(Pageable p) {
+        return carnetRepository.findAll(p);
     }
 
     @Data

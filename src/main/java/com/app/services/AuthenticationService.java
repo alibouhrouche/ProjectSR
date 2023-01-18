@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,6 +69,12 @@ public class AuthenticationService {
 
   public List<Client> getUsers(){
     return clientRepository.findAll();
+  }
+  public Page<Client> getUsers(Pageable p){
+    return clientRepository.findAll(p);
+  }
+  public Page<Client> getUsersByEmail(String e,Pageable p){
+    return clientRepository.findByEmail(e,p);
   }
   public Optional<Client> getUser(int id){
     return clientRepository.findById(id);
