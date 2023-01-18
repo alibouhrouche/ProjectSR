@@ -1,5 +1,6 @@
 package com.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -26,6 +27,7 @@ public class Message implements Serializable {
     private Integer id;
 
     @Column(name = "date_ecriture", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant dateEcriture;
 
     @Column(name = "message", nullable = false, length = 45)
