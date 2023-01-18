@@ -18,21 +18,23 @@ public class AuthenticationController {
 
   private final AuthenticationService service;
 
-  @PostMapping("/register/{isClient}")
+  @PostMapping(value={"/register/{isClient}"},produces = {"application/json", "application/xml"}, consumes = MediaType.ALL_VALUE)
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody Client client,
       @PathVariable boolean isClient
   ) {
     return ResponseEntity.ok(service.register(client,isClient));
   }
-  @PostMapping(value = {"/authenticate"},produces = {"application/json", MediaType.ALL_VALUE}, consumes = MediaType.ALL_VALUE)
+  @PostMapping(value = {"/authenticate"},produces = {"application/json", "application/xml"}, consumes = MediaType.ALL_VALUE)
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(service.authenticate(request));
   }
-  @GetMapping("/currentUser")
+  @GetMapping(value={"/currentUser"},produces = {"application/json", "application/xml"}, consumes = MediaType.ALL_VALUE)
   public ResponseEntity<Client> current(Authentication authentication) {
+      if(authentication == null)
+        throw new Error("No Logged-in user");
       return ResponseEntity.ok((Client)authentication.getPrincipal());
   }
 }
