@@ -29,7 +29,6 @@ public class Client implements UserDetails {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(accessMode = AccessMode.READ_ONLY)
     private Integer id;
 
     @Column(name = "code_postal", nullable = false)
@@ -54,7 +53,6 @@ public class Client implements UserDetails {
     private String prenom;
 
     @Enumerated(EnumType.STRING)
-    @Schema(accessMode = AccessMode.READ_ONLY)
     private Role role;
 
     public Client(Integer codePostal, String rue, String ville, String email, String password, String nom, String prenom) {
